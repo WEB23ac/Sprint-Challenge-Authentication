@@ -52,3 +52,31 @@ describe('POST api/auth/login', () => {
       .expect('Content-Type', /json/)
   })
 })
+
+describe('GET api/jokes with no auth', () => {
+  it('should return 400 status when no authentication given', () => {
+    return request(server)
+      .get('/api/jokes')
+      .expect(400)
+  })
+
+  describe('GET api/jokes with auth', () => {
+    beforeEach(function (done) {
+      request(server)
+        .post('/api/auth/login')
+        .send(testUser)
+        .end(function (err, res) {
+          token = res.body.token;
+          console.log(token)
+          done();
+        })
+    })
+    it('should receive token for user', done => {
+      request(server)
+        .get('/api/jokes')
+        .set('Authorization', token)
+        .expect(200, done)
+    })
+  })
+})
+
