@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 
-const users = require('../helpers/users-model');
+const Users = require('../helpers/users-model');
 
+const { validateUser } = require('../helpers/users-helpers');
 const { getJwtToken } = require('../helpers/jwt-helpers');
 
 router.post('/register', (req, res) => {
@@ -11,14 +12,14 @@ router.post('/register', (req, res) => {
   const validationResult = validateUser(user);
 
   if (validationResult.isSuccessful) {
-    const hash = bcrypt.hashSync(user.password, 14);
+    const hash = bcrypt.hashSync(user.password, 12);
     user.password = hash;
     Users.add(user)
       .then(saved => {
         res.status(201).json(saved)
       })
       .catch(err => {
-        res.status(500).json({ message: 'Error creating user in Database', error: err.toStrin() })
+        res.status(500).json({ message: 'Error creating user in Database', error: err.toString() })
       })
   } else {
     res.status(400).json({
