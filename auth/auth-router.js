@@ -30,7 +30,28 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  // implement login
+  let { username, password } = req.body;
+  console.log(`post/login`, username, password)
+
+  Users.findBy({ username })
+    .then(user => {
+      console.log(`findByName, user`, user)
+      if (user && bcrypt.compareSync(password, user.password)) {
+        // 2: produce a token
+        const token = getJwtToken(user.username, user.department);
+
+        // 3: send the token to the client
+        res.status(200).json({
+          message: `Welcome ${user.username}! have a token...`,
+          token
+        });
+      } else {
+        res.status(401).json({ message: "Invalid Credentials" });
+      }
+    })
+    .catch(error => {
+      res.status(500).json({ message: error.toString() });
+    });
 });
 
 module.exports = router;
