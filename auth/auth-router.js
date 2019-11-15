@@ -1,5 +1,7 @@
 const router = require('express').Router();
 
+const db = require('../helpers/users-model');
+
 router.post('/register', (req, res) => {
   // implement registration
 });
